@@ -3,7 +3,7 @@
 COMMAND=$1
 
 case $COMMAND in
-  create)
+  gen)
     echo "Starting Minikube..."
     minikube start
     echo "Setting kubectl context to minikube..."

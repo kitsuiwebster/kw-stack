@@ -4,7 +4,7 @@
   "main": "index.js",
   "repository": "https://gitlab.com/kitsuiwebster/kw-stack.git",
   "scripts": {
-    "create": "bash ./scripts/commands.bash create",
+    "gen": "bash ./scripts/commands.bash gen",
     "delete": "bash ./scripts/commands.bash delete",
     "pause": "bash ./scripts/commands.bash pause",
     "resume": "bash ./scripts/commands.bash resume"
