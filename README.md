@@ -66,13 +66,10 @@ To resume the Minikube cluster, run:
 
 ```
 
-Ensure you have executable permissions for the scripts. If not, you can add permissions with:
+### Use K9s to Manage the Cluster
+
+To use K9s to manage the Minikube cluster, run:
 
 ```bash
-chmod +x scripts/*.sh
-
+k9s
 ```
-
-## Directory Structure
-
-Your repository should have a structure similar to this:
