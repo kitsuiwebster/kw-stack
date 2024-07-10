@@ -4,10 +4,10 @@
   "main": "index.js",
   "repository": "https://gitlab.com/kitsuiwebster/kw-stack.git",
   "scripts": {
-    "create": "bash ./scripts/manage_cluster.bash create",
-    "delete": "bash ./scripts/manage_cluster.bash delete",
-    "pause": "bash ./scripts/manage_cluster.bash pause",
-    "resume": "bash ./scripts/manage_cluster.bash resume"
+    "create": "bash ./scripts/commands.bash create",
+    "delete": "bash ./scripts/commands.bash delete",
+    "pause": "bash ./scripts/commands.bash pause",
+    "resume": "bash ./scripts/commands.bash resume"
   },
   "author": "kitsuiwebster",
   "license": "MIT"
