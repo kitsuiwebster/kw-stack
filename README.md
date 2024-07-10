@@ -35,8 +35,7 @@ chmod +x scripts/*.sh
 To create and start the Minikube cluster, run:
 
 ```bash
-./scripts/create.sh
-
+yarn create
 ```
 
 ### Delete the Cluster
@@ -44,8 +43,7 @@ To create and start the Minikube cluster, run:
 To stop and delete the Minikube cluster, run:
 
 ```bash
-./scripts/delete.sh
-
+yarn delete
 ```
 
 ### Pause the Cluster
@@ -53,8 +51,7 @@ To stop and delete the Minikube cluster, run:
 To pause the Minikube cluster, run:
 
 ```bash
-./scripts/pause.sh
-
+yarn pause
 ```
 
 ### Resume the Cluster
@@ -62,8 +59,7 @@ To pause the Minikube cluster, run:
 To resume the Minikube cluster, run:
 
 ```bash
-./scripts/resume.sh
-
+yarn resume
 ```
 
 ### Use K9s to Manage the Cluster
@@ -72,4 +68,4 @@ To use K9s to manage the Minikube cluster, run:
 
 ```bash
 k9s
-```glpat-vwJTbXg7xcPX3JmbkcUZ
+```

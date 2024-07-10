@@ -1,0 +1,14 @@
+{
+  "name": "kw-stack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://gitlab.com/kitsuiwebster/kw-stack.git",
+  "scripts": {
+    "create": "bash ./scripts/manage_cluster.bash create",
+    "delete": "bash ./scripts/manage_cluster.bash delete",
+    "pause": "bash ./scripts/manage_cluster.bash pause",
+    "resume": "bash ./scripts/manage_cluster.bash resume"
+  },
+  "author": "kitsuiwebster",
+  "license": "MIT"
+}
