@@ -72,4 +72,4 @@ To use K9s to manage the Minikube cluster, run:
 
 ```bash
 k9s
-```
+```glpat-vwJTbXg7xcPX3JmbkcUZ
