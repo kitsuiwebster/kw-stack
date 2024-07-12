@@ -3,7 +3,7 @@
 COMMAND=$1
 
 case $COMMAND in
-  gen)
+  create)
     echo "Starting Minikube..."
     minikube start
     echo "Setting kubectl context to minikube..."
@@ -12,7 +12,9 @@ case $COMMAND in
     kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
     kubectl apply -f manifests/keycloak/keycloak-deployment.yaml
     kubectl apply -f manifests/gravitee/gravitee-deployment.yaml
-    kubectl apply -f manifests/ingress/ingress.yaml  # Optional
+    kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
+    kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
+    kubectl apply -f manifests/ingress/ingress.yaml
     echo "Cluster created and applications deployed."
     ;;
   delete)
@@ -21,15 +23,15 @@ case $COMMAND in
     minikube delete
     echo "Cluster deleted."
     ;;
-  pause)
-    echo "Pausing Minikube cluster..."
-    minikube pause
-    echo "Cluster paused."
+  stop)
+    echo "Stopping Minikube cluster..."
+    minikube stop
+    echo "Cluster stopped."
     ;;
-  resume)
-    echo "Resuming Minikube cluster..."
-    minikube unpause
-    echo "Cluster resumed."
+  start)
+    echo "Starting Minikube cluster..."
+    minikube start
+    echo "Cluster started."
     ;;
   *)
     echo "Usage: $0 {create|delete|pause|resume}"

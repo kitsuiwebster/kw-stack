@@ -4,10 +4,10 @@
   "main": "index.js",
   "repository": "https://gitlab.com/kitsuiwebster/kw-stack.git",
   "scripts": {
-    "gen": "bash ./scripts/commands.bash gen",
-    "delete": "bash ./scripts/commands.bash delete",
-    "pause": "bash ./scripts/commands.bash pause",
-    "resume": "bash ./scripts/commands.bash resume"
+    "kwgen": "bash ./scripts/commands.bash create",
+    "kwdel": "bash ./scripts/commands.bash delete",
+    "kwstop": "bash ./scripts/commands.bash stop",
+    "kwstart": "bash ./scripts/commands.bash start"
   },
   "author": "kitsuiwebster",
   "license": "MIT"
