@@ -35,7 +35,7 @@ chmod +x scripts/*.sh
 To create and start the Minikube cluster, run:
 
 ```bash
-yarn create
+yarn kwgen
 ```
 
 ### Delete the Cluster
@@ -43,23 +43,31 @@ yarn create
 To stop and delete the Minikube cluster, run:
 
 ```bash
-yarn delete
+yarn kwdel
 ```
 
-### Pause the Cluster
+### Stop the Cluster
 
-To pause the Minikube cluster, run:
+To stop the Minikube cluster, run:
 
 ```bash
-yarn pause
+yarn kwstop
 ```
 
-### Resume the Cluster
+### Start the Cluster
 
-To resume the Minikube cluster, run:
+To start the Minikube cluster, run:
 
 ```bash
-yarn resume
+yarn kwstart
+```
+
+### Get the URLs and Credentials
+
+To get the URLs and credentials for the services, run:
+
+```bash
+yarn kwcreds
 ```
 
 ### Use K9s to Manage the Cluster
