@@ -24,13 +24,5 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nestjs
-spec:
-  ports:
-  - port: 3001
-  selector:
-    app: nestjs
+
+
