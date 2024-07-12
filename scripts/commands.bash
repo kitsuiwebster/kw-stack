@@ -37,17 +37,32 @@ wait_for_ingress() {
 print_urls_and_credentials() {
   MINIKUBE_IP=$(minikube ip)
   echo "👉 Access your services at the following URLs:"
-  echo " - CouchDB: http://couchdb.local (admin:admin)"
-  echo " - Gravitee: http://gravitee.local"
-  echo " - Keycloak: http://keycloak.local (admin:admin)"
-  echo " - NestJS: http://nestjs.local"
-  echo " - ReactJS: http://reactjs.local"
-  echo "Or use the Minikube IP directly:"
-  echo " - CouchDB: http://$MINIKUBE_IP:30084 (admin:admin)"
-  echo " - Gravitee: http://$MINIKUBE_IP:30083"
-  echo " - Keycloak: http://$MINIKUBE_IP:30080 (admin:admin)"
-  echo " - NestJS: http://$MINIKUBE_IP:30001"
-  echo " - ReactJS: http://$MINIKUBE_IP:30000"
+  echo ""
+  echo ""
+  echo "🛋 CouchDB: http://couchdb.local"
+  echo ""
+  echo "🆔  admin"
+  echo "🗝️  admin"
+  echo ""
+  echo ""
+  echo "🪐 Gravitee: http://gravitee.local"
+  echo ""
+  echo "🆔  admin"
+  echo "🗝️  admin"
+  echo ""
+  echo ""
+  echo "🔐 Keycloak: http://keycloak.local"
+  echo ""
+  echo "🆔  admin"
+  echo "🗝️  admin"
+  echo ""
+  echo ""
+  echo "⚙️ NestJS: http://nestjs.local"
+  echo ""
+  echo ""
+  echo "⚛️ ReactJS: http://reactjs.local"
+  echo ""
+  echo ""
 }
 
 case $COMMAND in
@@ -60,23 +75,23 @@ case $COMMAND in
     kubectl config use-context minikube
     wait_for_ingress
     echo "👉 Applying Kubernetes manifests..."
-    echo " - CouchDB"
+    echo "🛋 CouchDB"
     kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
     kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
     kubectl apply -f manifests/couchdb/couchdb-service.yaml
-    echo " - Keycloak"
+    echo "🔐 Keycloak"
     kubectl apply -f manifests/keycloak/keycloak-deployment.yaml
     kubectl apply -f manifests/keycloak/keycloak-ingress.yaml
     kubectl apply -f manifests/keycloak/keycloak-service.yaml
-    echo " - Gravitee"
+    echo "🪐 Gravitee"
     kubectl apply -f manifests/gravitee/gravitee-deployment.yaml
     kubectl apply -f manifests/gravitee/gravitee-ingress.yaml
     kubectl apply -f manifests/gravitee/gravitee-service.yaml
-    echo " - NestJS"
+    echo "⚙️ NestJS"
     kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
     kubectl apply -f manifests/nestjs/nestjs-ingress.yaml
     kubectl apply -f manifests/nestjs/nestjs-service.yaml
-    echo " - ReactJS"
+    echo "⚛️ ReactJS"
     kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
     kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
     kubectl apply -f manifests/reactjs/reactjs-service.yaml
