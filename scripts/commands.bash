@@ -34,6 +34,22 @@ wait_for_ingress() {
   echo "👉 NGINX Ingress controller is ready."
 }
 
+print_urls_and_credentials() {
+  MINIKUBE_IP=$(minikube ip)
+  echo "👉 Access your services at the following URLs:"
+  echo " - CouchDB: http://couchdb.local (admin:admin)"
+  echo " - Gravitee: http://gravitee.local"
+  echo " - Keycloak: http://keycloak.local (admin:admin)"
+  echo " - NestJS: http://nestjs.local"
+  echo " - ReactJS: http://reactjs.local"
+  echo "Or use the Minikube IP directly:"
+  echo " - CouchDB: http://$MINIKUBE_IP:30084 (admin:admin)"
+  echo " - Gravitee: http://$MINIKUBE_IP:30083"
+  echo " - Keycloak: http://$MINIKUBE_IP:30080 (admin:admin)"
+  echo " - NestJS: http://$MINIKUBE_IP:30001"
+  echo " - ReactJS: http://$MINIKUBE_IP:30000"
+}
+
 case $COMMAND in
   create)
     echo "👉 Starting Minikube..."
@@ -44,16 +60,26 @@ case $COMMAND in
     kubectl config use-context minikube
     wait_for_ingress
     echo "👉 Applying Kubernetes manifests..."
+    echo " - CouchDB"
     kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
     kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
+    kubectl apply -f manifests/couchdb/couchdb-service.yaml
+    echo " - Keycloak"
     kubectl apply -f manifests/keycloak/keycloak-deployment.yaml
     kubectl apply -f manifests/keycloak/keycloak-ingress.yaml
+    kubectl apply -f manifests/keycloak/keycloak-service.yaml
+    echo " - Gravitee"
     kubectl apply -f manifests/gravitee/gravitee-deployment.yaml
     kubectl apply -f manifests/gravitee/gravitee-ingress.yaml
+    kubectl apply -f manifests/gravitee/gravitee-service.yaml
+    echo " - NestJS"
     kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
     kubectl apply -f manifests/nestjs/nestjs-ingress.yaml
+    kubectl apply -f manifests/nestjs/nestjs-service.yaml
+    echo " - ReactJS"
     kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
     kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
+    kubectl apply -f manifests/reactjs/reactjs-service.yaml
     update_hosts
     echo "👉 Cluster created and applications deployed."
     ;;
@@ -74,8 +100,11 @@ case $COMMAND in
     update_hosts
     echo "👉 Cluster started."
     ;;
+  access)
+    print_urls_and_credentials
+    ;;
   *)
-    echo "👉 Usage: $0 {create|delete|stop|start}"
+    echo "👉 Usage: $0 {create|delete|stop|start|access}"
     exit 1
     ;;
 esac

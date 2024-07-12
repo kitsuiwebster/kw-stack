@@ -17,6 +17,11 @@ spec:
         image: graviteeio/apim:latest
         ports:
         - containerPort: 8083
+        env:
+        - name: GRAVITEE_MANAGEMENT_USER
+          value: admin
+        - name: GRAVITEE_MANAGEMENT_PASSWORD
+          value: admin
         resources:
           requests:
             memory: "64Mi"
@@ -24,4 +29,3 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
-
