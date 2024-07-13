@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
       - name: nestjs
-        image: your-nest-image:latest
+        image: nestjs-app:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3001
+        - containerPort: 3000
         resources:
           requests:
             memory: "64Mi"
@@ -24,5 +25,3 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
-
-

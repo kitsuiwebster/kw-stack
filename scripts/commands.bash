@@ -78,9 +78,16 @@ case $COMMAND in
     echo "⚛️   Building React app..."
     (cd reactjs-app && npm install && npm run build)
 
-    echo "⚛️   Building Docker image..."
+    echo "⚛️   Building React Docker image..."
     eval $(minikube docker-env)
     docker build -t reactjs-app:latest ./reactjs-app
+
+    echo "⚙️   Building NestJS app..."
+    (cd nestjs-app && npm install && npm run build)
+
+    echo "⚙️   Building NestJS Docker image..."
+    eval $(minikube docker-env)
+    docker build -t nestjs-app:latest ./nestjs-app
 
     echo "👉 Applying Kubernetes manifests..."
     echo "🛋   CouchDB"
