@@ -4,7 +4,7 @@ COMMAND=$1
 
 update_hosts() {
   # Get the new Minikube IP
-  MINIKUBE_IP=$(minikube ip)
+  MINIKUBE_IP=$(minikube ip -v 5)
 
   # Define the hostnames
   HOSTNAMES=("couchdb.local" "gravitee.local" "keycloak.local" "nestjs.local" "reactjs.local")
@@ -35,32 +35,32 @@ wait_for_ingress() {
 }
 
 print_urls_and_credentials() {
-  MINIKUBE_IP=$(minikube ip)
+  MINIKUBE_IP=$(minikube ip -v 5)
   echo "👉 Access your services at the following URLs:"
   echo ""
   echo ""
-  echo "🛋 CouchDB: http://couchdb.local"
+  echo "🛋   CouchDB: http://couchdb.local"
   echo ""
   echo "🆔  admin"
-  echo "🗝️  admin"
+  echo "🗝️   admin"
   echo ""
   echo ""
-  echo "🪐 Gravitee: http://gravitee.local"
-  echo ""
-  echo "🆔  admin"
-  echo "🗝️  admin"
-  echo ""
-  echo ""
-  echo "🔐 Keycloak: http://keycloak.local"
+  echo "🪐  Gravitee: http://gravitee.local"
   echo ""
   echo "🆔  admin"
-  echo "🗝️  admin"
+  echo "🗝️   admin"
   echo ""
   echo ""
-  echo "⚙️ NestJS: http://nestjs.local"
+  echo "🔐  Keycloak: http://keycloak.local"
+  echo ""
+  echo "🆔  admin"
+  echo "🗝️   admin"
   echo ""
   echo ""
-  echo "⚛️ ReactJS: http://reactjs.local"
+  echo "⚙️   NestJS: http://nestjs.local"
+  echo ""
+  echo ""
+  echo "⚛️   ReactJS: http://reactjs.local"
   echo ""
   echo ""
 }
@@ -68,30 +68,38 @@ print_urls_and_credentials() {
 case $COMMAND in
   create)
     echo "👉 Starting Minikube..."
-    minikube start
+    minikube start -v 5
     echo "👉 Enabling NGINX Ingress controller..."
-    minikube addons enable ingress
+    minikube addons enable ingress -v 5
     echo "👉 Setting kubectl context to minikube..."
     kubectl config use-context minikube
     wait_for_ingress
+
+    echo "⚛️   Building React app..."
+    (cd reactjs-app && npm install && npm run build)
+
+    echo "⚛️   Building Docker image..."
+    eval $(minikube docker-env)
+    docker build -t reactjs-app:latest ./reactjs-app
+
     echo "👉 Applying Kubernetes manifests..."
-    echo "🛋 CouchDB"
+    echo "🛋   CouchDB"
     kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
     kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
     kubectl apply -f manifests/couchdb/couchdb-service.yaml
-    echo "🔐 Keycloak"
+    echo "🔐  Keycloak"
     kubectl apply -f manifests/keycloak/keycloak-deployment.yaml
     kubectl apply -f manifests/keycloak/keycloak-ingress.yaml
     kubectl apply -f manifests/keycloak/keycloak-service.yaml
-    echo "🪐 Gravitee"
+    echo "🪐  Gravitee"
     kubectl apply -f manifests/gravitee/gravitee-deployment.yaml
     kubectl apply -f manifests/gravitee/gravitee-ingress.yaml
     kubectl apply -f manifests/gravitee/gravitee-service.yaml
-    echo "⚙️ NestJS"
+    echo "⚙️   NestJS"
     kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
     kubectl apply -f manifests/nestjs/nestjs-ingress.yaml
     kubectl apply -f manifests/nestjs/nestjs-service.yaml
-    echo "⚛️ ReactJS"
+    echo "⚛️   ReactJS"
     kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
     kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
     kubectl apply -f manifests/reactjs/reactjs-service.yaml
@@ -100,18 +108,18 @@ case $COMMAND in
     ;;
   delete)
     echo "👉 Stopping and deleting Minikube cluster..."
-    minikube stop
-    minikube delete
+    minikube stop -v 5
+    minikube delete -v 5
     echo "👉 Cluster deleted."
     ;;
   stop)
     echo "👉 Stopping Minikube cluster..."
-    minikube stop
+    minikube stop -v 5
     echo "👉 Cluster stopped."
     ;;
   start)
     echo "👉 Starting Minikube cluster..."
-    minikube start
+    minikube start -v 5
     update_hosts
     echo "👉 Cluster started."
     ;;

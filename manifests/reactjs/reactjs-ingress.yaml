@@ -15,4 +15,4 @@ spec:
           service:
             name: reactjs
             port:
-              number: 3000
+              number: 80

@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
       - name: reactjs
-        image: your-react-image:latest
+        image: reactjs-app:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         resources:
           requests:
             memory: "64Mi"
