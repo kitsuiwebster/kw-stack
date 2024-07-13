@@ -75,19 +75,24 @@ case $COMMAND in
     kubectl config use-context kw-stack
     wait_for_ingress
 
-    echo "⚛️   Building React app..."
-    (cd reactjs-app && npm install && npm run build)
+    # echo "⚛️   Building React app..."
+    # (cd reactjs-app && npm install && npm run build)
 
-    echo "⚛️   Building React Docker image..."
-    eval $(minikube docker-env -p kw-stack)
-    docker build -t reactjs-app:latest ./reactjs-app
+    # echo "⚛️   Building React Docker image..."
+    # eval $(minikube docker-env -p kw-stack)
+    # docker build -t reactjs-app:latest ./reactjs-app
 
-    echo "⚙️   Building NestJS app..."
-    (cd nestjs-app && npm install && npm run build)
+    # echo "⚙️   Building NestJS app..."
+    # (cd nestjs-app && npm install && npm run build)
 
-    echo "⚙️   Building NestJS Docker image..."
-    eval $(minikube docker-env -p kw-stack)
-    docker build -t nestjs-app:latest ./nestjs-app
+    # echo "⚙️   Building NestJS Docker image..."
+    # eval $(minikube docker-env -p kw-stack)
+    # docker build -t nestjs-app:latest ./nestjs-app
+
+    echo "👉 Creating CouchDB secret..."
+    kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
+    echo "👉 Creating Gravitee secret..."
+    kubectl create secret generic gravitee-secret --from-literal=username=admin --from-literal=password=admin --namespace=default
 
     echo "👉 Applying Kubernetes manifests..."
     echo "🛋   CouchDB"
@@ -110,8 +115,10 @@ case $COMMAND in
     kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
     kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
     kubectl apply -f manifests/reactjs/reactjs-service.yaml
-    echo "👉 Applying Kubernetes job to init CouchDB..."
+
+    echo "👉 Applying Kubernetes job to initialize CouchDB..."
     kubectl apply -f jobs/couchdb-init.yaml
+
     update_hosts
     echo "👉 Cluster created and applications deployed."
     ;;
