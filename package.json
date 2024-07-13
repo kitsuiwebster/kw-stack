@@ -4,11 +4,11 @@
   "main": "index.js",
   "repository": "https://gitlab.com/kitsuiwebster/kw-stack.git",
   "scripts": {
-    "kwgen": "bash ./scripts/commands.bash create",
-    "kwdel": "bash ./scripts/commands.bash delete",
-    "kwstop": "bash ./scripts/commands.bash stop",
-    "kwstart": "bash ./scripts/commands.bash start",
-    "kwcreds": "bash ./scripts/commands.bash access"
+    "kw:gen": "bash ./scripts/commands.bash create",
+    "kw:del": "bash ./scripts/commands.bash delete",
+    "kw:stop": "bash ./scripts/commands.bash stop",
+    "kw:start": "bash ./scripts/commands.bash start",
+    "kw:info": "bash ./scripts/commands.bash access"
   },
   "author": "kitsuiwebster",
   "license": "MIT"

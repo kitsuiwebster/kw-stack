@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: couchdb-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: curl
+        image: curlimages/curl:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            until curl -X PUT http://couchdb.local:5984/_users; do
+              echo "Waiting for CouchDB to be ready..."
+              sleep 5
+            done;
+            curl -X PUT http://couchdb.local:5984/_replicator;
+            curl -X PUT http://couchdb.local:5984/_global_changes;
+      restartPolicy: OnFailure

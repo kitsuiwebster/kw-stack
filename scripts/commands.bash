@@ -4,7 +4,7 @@ COMMAND=$1
 
 update_hosts() {
   # Get the new Minikube IP
-  MINIKUBE_IP=$(minikube ip -v 5)
+  MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
 
   # Define the hostnames
   HOSTNAMES=("couchdb.local" "gravitee.local" "keycloak.local" "nestjs.local" "reactjs.local")
@@ -35,11 +35,11 @@ wait_for_ingress() {
 }
 
 print_urls_and_credentials() {
-  MINIKUBE_IP=$(minikube ip -v 5)
+  MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
   echo "👉 Access your services at the following URLs:"
   echo ""
   echo ""
-  echo "🛋   CouchDB: http://couchdb.local"
+  echo "🛋   CouchDB: http://couchdb.local/_utils"
   echo ""
   echo "🆔  admin"
   echo "🗝️   admin"
@@ -68,25 +68,25 @@ print_urls_and_credentials() {
 case $COMMAND in
   create)
     echo "👉 Starting Minikube..."
-    minikube start -v 5
+    minikube start -p kw-stack -v 5
     echo "👉 Enabling NGINX Ingress controller..."
-    minikube addons enable ingress -v 5
+    minikube addons enable ingress -p kw-stack -v 5
     echo "👉 Setting kubectl context to minikube..."
-    kubectl config use-context minikube
+    kubectl config use-context kw-stack
     wait_for_ingress
 
     echo "⚛️   Building React app..."
     (cd reactjs-app && npm install && npm run build)
 
     echo "⚛️   Building React Docker image..."
-    eval $(minikube docker-env)
+    eval $(minikube docker-env -p kw-stack)
     docker build -t reactjs-app:latest ./reactjs-app
 
     echo "⚙️   Building NestJS app..."
     (cd nestjs-app && npm install && npm run build)
 
     echo "⚙️   Building NestJS Docker image..."
-    eval $(minikube docker-env)
+    eval $(minikube docker-env -p kw-stack)
     docker build -t nestjs-app:latest ./nestjs-app
 
     echo "👉 Applying Kubernetes manifests..."
@@ -110,23 +110,25 @@ case $COMMAND in
     kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
     kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
     kubectl apply -f manifests/reactjs/reactjs-service.yaml
+    echo "👉 Applying Kubernetes job to init CouchDB..."
+    kubectl apply -f jobs/couchdb-init.yaml
     update_hosts
     echo "👉 Cluster created and applications deployed."
     ;;
   delete)
     echo "👉 Stopping and deleting Minikube cluster..."
-    minikube stop -v 5
-    minikube delete -v 5
+    minikube stop -p kw-stack -v 5
+    minikube delete -p kw-stack -v 5
     echo "👉 Cluster deleted."
     ;;
   stop)
     echo "👉 Stopping Minikube cluster..."
-    minikube stop -v 5
+    minikube stop -p kw-stack -v 5
     echo "👉 Cluster stopped."
     ;;
   start)
     echo "👉 Starting Minikube cluster..."
-    minikube start -v 5
+    minikube start -p kw-stack -v 5
     update_hosts
     echo "👉 Cluster started."
     ;;
