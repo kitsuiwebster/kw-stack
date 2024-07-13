@@ -1,0 +1,9 @@
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: api.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  ingressClassName: "nginx"

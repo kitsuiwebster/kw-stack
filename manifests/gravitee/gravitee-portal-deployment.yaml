@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gravitee
+  name: gravitee-portal
+  labels:
+    app: gravitee
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: gravitee
+      tier: gravitee-portal
   template:
     metadata:
       labels:
         app: gravitee
+        tier: gravitee-portal
     spec:
       containers:
-      - name: gravitee
-        image: graviteeio/apim:latest
+      - name: gravitee-portal
+        image: graviteeio/apim-portal-ui:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8083
-        env:
-        - name: GRAVITEE_MANAGEMENT_USER
-          value: admin
-        - name: GRAVITEE_MANAGEMENT_PASSWORD
-          value: admin
+        - containerPort: 8084
         resources:
           requests:
-            memory: "64Mi"
+            memory: "128Mi"
             cpu: "250m"
           limits:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "500m"

@@ -9,10 +9,31 @@ spec:
   - host: gravitee.local
     http:
       paths:
-      - path: /
+      - path: /api
         pathType: Prefix
         backend:
           service:
-            name: gravitee
+            name: gravitee-api
             port:
               number: 8083
+      - path: /ui
+        pathType: Prefix
+        backend:
+          service:
+            name: gravitee-ui
+            port:
+              number: 80
+      - path: /gateway
+        pathType: Prefix
+        backend:
+          service:
+            name: gravitee-gateway
+            port:
+              number: 8082
+      - path: /portal
+        pathType: Prefix
+        backend:
+          service:
+            name: gravitee-portal
+            port:
+              number: 8084

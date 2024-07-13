@@ -1,0 +1,12 @@
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ingress.class: "nginx"
+  paths:
+    - path: /management
+      pathType: ImplementationSpecific
+  hosts:
+    - host: management.example.com
+      paths:
+        - path: /management
+          pathType: ImplementationSpecific

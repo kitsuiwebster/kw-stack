@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gravitee-config
+data:
+  gravitee.yaml: |
+    management:
+      type: couchdb
+      couchdb:
+        endpoints:
+          - http://couchdb.local:5984
+        db: gravitee
+        username: ${GRAVITEE_COUCHDB_USERNAME}
+        password: ${GRAVITEE_COUCHDB_PASSWORD}
+
+    gateway:
+      type: couchdb
+      couchdb:
+        endpoints:
+          - http://couchdb.local:5984
+        db: gravitee
+        username: ${GRAVITEE_COUCHDB_USERNAME}
+        password: ${GRAVITEE_COUCHDB_PASSWORD}
+
+    elasticsearch:
+      endpoints:
+        - http://elasticsearch.local:9200

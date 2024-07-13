@@ -89,10 +89,23 @@ case $COMMAND in
     # eval $(minikube docker-env -p kw-stack)
     # docker build -t nestjs-app:latest ./nestjs-app
 
+    # echo "🐋 Pulling Gravitee Docker images..."
+    # echo "🪐 Gravitee API Management Docker image"
+    # docker pull graviteeio/apim-management-api:latest
+    # echo "🪐 Gravitee Management Web UI Docker image"
+    # docker pull graviteeio/apim-management-ui:latest
+    # echo "🪐 Gravitee Gateway Docker image"
+    # docker pull graviteeio/apim-gateway:latest
+    # echo "🪐 Gravitee Portal Docker image"
+    # docker pull graviteeio/apim-portal-ui:latest
+
+    # echo "🐋 Building Docker images..."
+    # eval $(minikube docker-env -p kw-stack)
+
     echo "👉 Creating CouchDB secret..."
     kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
     echo "👉 Creating Gravitee secret..."
-    kubectl create secret generic gravitee-secret --from-literal=username=admin --from-literal=password=admin --namespace=default
+    kubectl create secret generic gravitee-secret --from-literal=username=admin --from-literal=password=admin
 
     echo "👉 Applying Kubernetes manifests..."
     echo "🛋   CouchDB"
@@ -104,9 +117,19 @@ case $COMMAND in
     kubectl apply -f manifests/keycloak/keycloak-ingress.yaml
     kubectl apply -f manifests/keycloak/keycloak-service.yaml
     echo "🪐  Gravitee"
-    kubectl apply -f manifests/gravitee/gravitee-deployment.yaml
-    kubectl apply -f manifests/gravitee/gravitee-ingress.yaml
-    kubectl apply -f manifests/gravitee/gravitee-service.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-api-deployment.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-ui-deployment.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-gateway-deployment.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-portal-deployment.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-api-service.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-ui-service.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-gateway-service.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-portal-service.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-ingress.yaml
+    # kubectl apply -f manifests/gravitee/gravitee-configmap.yaml
+    # echo "🔎  Elasticsearch"
+    # kubectl apply -f manifests/elasticsearch/elasticsearch-deployment.yaml
+    # kubectl apply -f manifests/elasticsearch/elasticsearch-service.yaml
     echo "⚙️   NestJS"
     kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
     kubectl apply -f manifests/nestjs/nestjs-ingress.yaml

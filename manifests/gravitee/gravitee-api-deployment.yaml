@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gravitee-api
+  labels:
+    app: gravitee
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gravitee
+      tier: gravitee-api
+  template:
+    metadata:
+      labels:
+        app: gravitee
+        tier: gravitee-api
+    spec:
+      containers:
+      - name: gravitee-api
+        image: graviteeio/apim-management-api:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+        env:
+        - name: GRAVITEE_COUCHDB_URI
+          value: "http://couchdb.local:5984"
+        - name: GRAVITEE_COUCHDB_DBNAME
+          value: "gravitee"
+        - name: GRAVITEE_COUCHDB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: couchdb-secret
+              key: username
+        - name: GRAVITEE_COUCHDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: couchdb-secret
+              key: password
+        - name: GRAVITEE_ELASTICSEARCH_HOST
+          value: "http://elasticsearch.local:9200"
+        volumeMounts:
+        - name: gravitee-config-volume
+          mountPath: /opt/graviteeio-management-api/config
+          subPath: gravitee.yaml
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: gravitee-config-volume
+        configMap:
+          name: gravitee-config
+          items:
+          - key: gravitee.yaml
+            path: gravitee.yaml
