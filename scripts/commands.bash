@@ -29,7 +29,7 @@ wait_for_ingress() {
   echo "👉 Waiting for NGINX Ingress controller to be ready..."
   while ! kubectl get pods -n ingress-nginx | grep -q '1/1'; do
     echo "👉 NGINX Ingress controller is not ready yet. Waiting..."
-    sleep 1
+    sleep 5
   done
   echo "👉 NGINX Ingress controller is ready."
 }
@@ -75,32 +75,26 @@ case $COMMAND in
     kubectl config use-context kw-stack
     wait_for_ingress
 
-    # echo "⚛️   Building React app..."
-    # (cd reactjs-app && npm install && npm run build)
+    echo "⚛️   Building React app..."
+    (cd reactjs-app && npm install && npm run build)
 
-    # echo "⚛️   Building React Docker image..."
-    # eval $(minikube docker-env -p kw-stack)
-    # docker build -t reactjs-app:latest ./reactjs-app
+    echo "⚛️   Building React Docker image..."
+    eval $(minikube docker-env -p kw-stack)
+    docker build -t reactjs-app:latest ./reactjs-app
 
-    # echo "⚙️   Building NestJS app..."
-    # (cd nestjs-app && npm install && npm run build)
+    echo "⚙️   Building NestJS app..."
+    (cd nestjs-app && npm install && npm run build)
 
-    # echo "⚙️   Building NestJS Docker image..."
-    # eval $(minikube docker-env -p kw-stack)
-    # docker build -t nestjs-app:latest ./nestjs-app
+    echo "⚙️   Building NestJS Docker image..."
+    eval $(minikube docker-env -p kw-stack)
+    docker build -t nestjs-app:latest ./nestjs-app
 
-    # echo "🐋 Pulling Gravitee Docker images..."
-    # echo "🪐 Gravitee API Management Docker image"
-    # docker pull graviteeio/apim-management-api:latest
-    # echo "🪐 Gravitee Management Web UI Docker image"
-    # docker pull graviteeio/apim-management-ui:latest
-    # echo "🪐 Gravitee Gateway Docker image"
-    # docker pull graviteeio/apim-gateway:latest
-    # echo "🪐 Gravitee Portal Docker image"
-    # docker pull graviteeio/apim-portal-ui:latest
-
-    # echo "🐋 Building Docker images..."
-    # eval $(minikube docker-env -p kw-stack)
+    echo "🔐  Deploying Keycloak..."
+    kubectl create -f https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak.yaml
+    echo "🔐  Setting up Keycloak Ingress..."
+    wget -q -O - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak-ingress.yaml | \
+    sed "s/KEYCLOAK_HOST/keycloak.local/" | \
+    kubectl create -f -
 
     echo "👉 Creating CouchDB secret..."
     kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
@@ -112,24 +106,8 @@ case $COMMAND in
     kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
     kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
     kubectl apply -f manifests/couchdb/couchdb-service.yaml
-    echo "🔐  Keycloak"
-    kubectl apply -f manifests/keycloak/keycloak-deployment.yaml
-    kubectl apply -f manifests/keycloak/keycloak-ingress.yaml
-    kubectl apply -f manifests/keycloak/keycloak-service.yaml
     echo "🪐  Gravitee"
-    # kubectl apply -f manifests/gravitee/gravitee-api-deployment.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-ui-deployment.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-gateway-deployment.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-portal-deployment.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-api-service.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-ui-service.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-gateway-service.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-portal-service.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-ingress.yaml
-    # kubectl apply -f manifests/gravitee/gravitee-configmap.yaml
-    # echo "🔎  Elasticsearch"
-    # kubectl apply -f manifests/elasticsearch/elasticsearch-deployment.yaml
-    # kubectl apply -f manifests/elasticsearch/elasticsearch-service.yaml
+
     echo "⚙️   NestJS"
     kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
     kubectl apply -f manifests/nestjs/nestjs-ingress.yaml

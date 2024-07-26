@@ -1,7 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: keycloak-ingress
+  name: keycloak
+  namespace: default
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -15,4 +16,4 @@ spec:
           service:
             name: keycloak
             port:
-              number: 8080
+              number: 80

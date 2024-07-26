@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak
+  namespace: default
+  labels:
+    app: keycloak
 spec:
   replicas: 1
   selector:
@@ -15,17 +18,10 @@ spec:
       containers:
       - name: keycloak
         image: jboss/keycloak:latest
-        ports:
-        - containerPort: 8080
         env:
         - name: KEYCLOAK_USER
-          value: admin
+          value: "admin"
         - name: KEYCLOAK_PASSWORD
-          value: admin
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "250m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
+          value: "admin"
+        ports:
+        - containerPort: 8080
