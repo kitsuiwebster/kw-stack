@@ -54,6 +54,8 @@ print_urls_and_credentials() {
 
 case $COMMAND in
   create)
+    echo -e "\n👉 Setting vm.max_map_count to 262144..."
+    sudo sysctl -w vm.max_map_count=262144
     echo -e "\n👉 Starting Minikube..."
     minikube start --cpus=4 -p kw-stack -v 5
     echo -e "\n👉 Enabling NGINX Ingress controller..."
@@ -71,6 +73,19 @@ case $COMMAND in
     echo -e "\n☸️ Adding Bitnami Helm repository..."
     helm repo update
 
+    couchdb_ascii
+
+    echo -e "\n🛋   Applying CouchDB manifests..."
+    kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
+    kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
+    kubectl apply -f manifests/couchdb/couchdb-service.yaml
+
+    echo -e "\n🛋   Applying Kubernetes job to initialize CouchDB..."
+    kubectl apply -f jobs/couchdb-init.yaml
+
+    echo -e "\n🔑 Creating CouchDB secret..."
+    kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
+
     react_ascii
 
     echo -e "\n⚛️   Building React app..."
@@ -80,6 +95,11 @@ case $COMMAND in
     eval $(minikube docker-env -p kw-stack)
     docker build -t reactjs-app:latest ./reactjs-app
 
+    echo -e "\n⚛️   Applying React manifests..."
+    kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
+    kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
+    kubectl apply -f manifests/reactjs/reactjs-service.yaml
+
     nest_ascii
 
     echo -e "\n⚙️   Building NestJS app..."
@@ -88,6 +108,11 @@ case $COMMAND in
     echo -e "\n⚙️   Building NestJS Docker image..."
     eval $(minikube docker-env -p kw-stack)
     docker build -t nestjs-app:latest ./nestjs-app
+
+    echo -e "\n⚙️   Applying NestJS manifests..."
+    kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
+    kubectl apply -f manifests/nestjs/nestjs-ingress.yaml
+    kubectl apply -f manifests/nestjs/nestjs-service.yaml
 
     keycloak_ascii
 
@@ -126,28 +151,8 @@ case $COMMAND in
     # echo -e "\n$MINIKUBE_IP portal.local" | sudo tee -a /etc/hosts
     # echo -e "\n$MINIKUBE_IP management-ui.local" | sudo tee -a /etc/hosts
 
-    echo -e "\n🔑 Creating CouchDB secret..."
-    kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
     echo -e "\n🔑 Creating Gravitee secret..."
     kubectl create secret generic gravitee-secret --from-literal=username=admin --from-literal=password=admin
-
-    echo -e "\n👉 Applying Kubernetes manifests..."
-    echo -e "\n🛋   CouchDB"
-    kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
-    kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
-    kubectl apply -f manifests/couchdb/couchdb-service.yaml
-
-    echo -e "\n⚙️   NestJS"
-    kubectl apply -f manifests/nestjs/nestjs-deployment.yaml
-    kubectl apply -f manifests/nestjs/nestjs-ingress.yaml
-    kubectl apply -f manifests/nestjs/nestjs-service.yaml
-    echo -e "\n⚛️   ReactJS"
-    kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
-    kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
-    kubectl apply -f manifests/reactjs/reactjs-service.yaml
-
-    echo -e "\n👉 Applying Kubernetes job to initialize CouchDB..."
-    kubectl apply -f jobs/couchdb-init.yaml
 
     echo -e "\n🪐 Update Gravitee Helm chart"
     helm dependency update graviteeio/apim
@@ -167,6 +172,8 @@ case $COMMAND in
     echo -e "\n👉 Cluster stopped."
     ;;
   start)
+    echo -e "\n👉 Setting vm.max_map_count to 262144..."
+    sudo sysctl -w vm.max_map_count=262144
     echo -e "\n👉 Starting Minikube cluster..."
     minikube start -p kw-stack -v 5
     update_hosts
