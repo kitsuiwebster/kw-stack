@@ -9,7 +9,7 @@ update_hosts() {
   MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
 
   echo -e "\n👉 Define the hostnames"
-  HOSTNAMES=("couchdb.local" "gravitee.local" "keycloak.local" "nestjs.local" "reactjs.local")
+  HOSTNAMES=("couchdb.local" "keycloak.local" "nestjs.local" "reactjs.local" "apim-api.local" "apim-ui.local" "apim-portal.local" "apim-gateway.local" "apim-apiportal.local")
 
   echo -e "\n👉 Backup the original /etc/hosts file"
   sudo cp /etc/hosts /etc/hosts.bak
@@ -21,7 +21,7 @@ update_hosts() {
 
   echo -e "\n👉 Add new Minikube entries"
   for HOST in "${HOSTNAMES[@]}"; do
-    echo -e "\n$MINIKUBE_IP $HOST" | sudo tee -a /etc/hosts
+    echo -e "$MINIKUBE_IP $HOST" | sudo tee -a /etc/hosts
   done
 
   echo -e "\n👉 Updated /etc/hosts with new Minikube IP: $MINIKUBE_IP"
@@ -31,7 +31,7 @@ wait_for_ingress() {
   echo -e "\n👉 Waiting for NGINX Ingress controller to be ready..."
   while ! kubectl get pods -n ingress-nginx | grep -q '1/1'; do
     echo -e "\n👉 NGINX Ingress controller is not ready yet. Waiting..."
-    sleep 5
+    sleep 60
   done
   echo -e "\n👉 NGINX Ingress controller is ready."
 }
@@ -41,13 +41,18 @@ print_urls_and_credentials() {
   echo -e "\n👉 Access your services at the following URLs:"
   echo -e "\n\n🛋   CouchDB: http://couchdb.local/_utils"
   echo -e "\n🆔  admin"
-  echo -e "\n🗝️   admin"
-  echo -e "\n\n🪐  Gravitee: http://gravitee.local"
+  echo -e "🗝️   admin"
+  echo -e "\n\n🪐  Gravitee:"
+  echo -e "\n🪐  Management API: http://apim-api.local/management"
+  echo -e "\n🪐  Management UI: http://apim-ui.local/console"
   echo -e "\n🆔  admin"
-  echo -e "\n🗝️   admin"
+  echo -e "🗝️   admin"
+  echo -e "\n🪐  Portal: http://apim-portal.local"
+  echo -e "\n🪐  Gateway: http://apim-gateway.local"
+  echo -e "\n🪐  API Portal: http://apim-apiportal.local/portal"
   echo -e "\n\n🔐  Keycloak: http://keycloak.local"
   echo -e "\n🆔  admin"
-  echo -e "\n🗝️   admin"
+  echo -e "🗝️   admin"
   echo -e "\n\n⚙️   NestJS: http://nestjs.local"
   echo -e "\n\n⚛️   ReactJS: http://reactjs.local"
 }
@@ -64,7 +69,6 @@ case $COMMAND in
     kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
     echo -e "\n👉 Setting kubectl context to minikube..."
     kubectl config use-context kw-stack
-    echo -e "\n👉 Waiting for NGINX Ingress controller to be ready..."
     wait_for_ingress
     echo -e "\n👉 Enabling snippet annotations in NGINX Ingress Controller..."
     kubectl get deployments -n ingress-nginx
@@ -133,8 +137,6 @@ case $COMMAND in
 
     echo -e "\n🪐 Installing Gravitee..."
     helm install graviteeio-apim4x graviteeio/apim \
-      --create-namespace \
-      --namespace gravitee-apim \
       -f /home/ash/kitsui/kw-stack/manifests/gravitee/values.yaml \
       --set ingress.className=nginx \
       # --debug \
@@ -159,6 +161,8 @@ case $COMMAND in
 
     update_hosts
     echo -e "\n👉 Cluster created and applications deployed."
+
+    print_urls_and_credentials
     ;;
   delete)
     echo -e "\n👉 Stopping and deleting Minikube cluster..."
