@@ -8,7 +8,8 @@
     "kw:del": "bash index.bash delete",
     "kw:stop": "bash index.bash stop",
     "kw:start": "bash index.bash start",
-    "kw:info": "bash index.bash access"
+    "kw:info": "bash index.bash access",
+    "kw:install": "bash index.bash install"
   },
   "author": "kitsuiwebster",
   "license": "MIT"
