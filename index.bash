@@ -215,6 +215,7 @@ case $COMMAND in
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     helm version
     helm repo update
+    ;;
   *)
     echo -e "\n👉 Usage: $0 {create|delete|stop|start|access}"
     exit 1
