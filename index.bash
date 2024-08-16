@@ -59,50 +59,50 @@ print_urls_and_credentials() {
 
 case $COMMAND in
   create)
-    echo -e "\n👉 Setting vm.max_map_count to 262144..."
-    sudo sysctl -w vm.max_map_count=262144
-    echo -e "\n👉 Starting Minikube..."
-    minikube start --cpus=2 -p kw-stack --memory=2048 -v 5
-    echo -e "\n👉 Enabling NGINX Ingress controller..."
-    minikube addons enable ingress -p kw-stack -v 5
-    echo -e "\n👉 Deleting ValidatingWebhookConfiguration to bypass NGINX Ingress admission rules..."
-    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
-    echo -e "\n👉 Setting kubectl context to minikube..."
-    kubectl config use-context kw-stack
-    wait_for_ingress
-    echo -e "\n👉 Enabling snippet annotations in NGINX Ingress Controller..."
-    kubectl get deployments -n ingress-nginx
-    kubectl set env deployment/ingress-nginx-controller ENABLE_SNIPPET_ANNOTATIONS=true -n ingress-nginx
+    # echo -e "\n👉 Setting vm.max_map_count to 262144..."
+    # sudo sysctl -w vm.max_map_count=262144
+    # echo -e "\n👉 Starting Minikube..."
+    # minikube start --cpus=2 -p kw-stack --memory=2048 -v 5
+    # echo -e "\n👉 Enabling NGINX Ingress controller..."
+    # minikube addons enable ingress -p kw-stack -v 5
+    # echo -e "\n👉 Deleting ValidatingWebhookConfiguration to bypass NGINX Ingress admission rules..."
+    # kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+    # echo -e "\n👉 Setting kubectl context to minikube..."
+    # kubectl config use-context kw-stack
+    # wait_for_ingress
+    # echo -e "\n👉 Enabling snippet annotations in NGINX Ingress Controller..."
+    # kubectl get deployments -n ingress-nginx
+    # kubectl set env deployment/ingress-nginx-controller ENABLE_SNIPPET_ANNOTATIONS=true -n ingress-nginx
 
-    echo -e "\n☸️ Adding Bitnami Helm repository..."
-    helm repo update
+    # echo -e "\n☸️ Adding Bitnami Helm repository..."
+    # helm repo update
 
-    couchdb_ascii
+    # couchdb_ascii
 
-    echo -e "\n🛋   Applying CouchDB manifests..."
-    kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
-    kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
-    kubectl apply -f manifests/couchdb/couchdb-service.yaml
+    # echo -e "\n🛋   Applying CouchDB manifests..."
+    # kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
+    # kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
+    # kubectl apply -f manifests/couchdb/couchdb-service.yaml
 
-    echo -e "\n🛋   Applying Kubernetes job to initialize CouchDB..."
-    kubectl apply -f jobs/couchdb-init.yaml
+    # echo -e "\n🛋   Applying Kubernetes job to initialize CouchDB..."
+    # kubectl apply -f jobs/couchdb-init.yaml
 
-    echo -e "\n🔑 Creating CouchDB secret..."
-    kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
+    # echo -e "\n🔑 Creating CouchDB secret..."
+    # kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
 
-    react_ascii
+    # react_ascii
 
-    echo -e "\n⚛️   Building React app..."
-    (cd reactjs-app && npm install && npm run build)
+    # echo -e "\n⚛️   Building React app..."
+    # (cd reactjs-app && npm install && npm run build)
 
-    echo -e "\n⚛️   Building React Docker image..."
-    eval $(minikube docker-env -p kw-stack)
-    docker build -t reactjs-app:latest ./reactjs-app
+    # echo -e "\n⚛️   Building React Docker image..."
+    # eval $(minikube docker-env -p kw-stack)
+    # docker build -t reactjs-app:latest ./reactjs-app
 
-    echo -e "\n⚛️   Applying React manifests..."
-    kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
-    kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
-    kubectl apply -f manifests/reactjs/reactjs-service.yaml
+    # echo -e "\n⚛️   Applying React manifests..."
+    # kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
+    # kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
+    # kubectl apply -f manifests/reactjs/reactjs-service.yaml
 
     nest_ascii
 
