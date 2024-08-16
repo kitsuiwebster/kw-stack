@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: nestjs.local
+  - host: nestjs.pikapi.co
     http:
       paths:
       - path: /
