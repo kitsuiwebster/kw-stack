@@ -62,7 +62,7 @@ case $COMMAND in
     echo -e "\n👉 Setting vm.max_map_count to 262144..."
     sudo sysctl -w vm.max_map_count=262144
     echo -e "\n👉 Starting Minikube..."
-    minikube start --cpus=1 -p kw-stack -v 5
+    minikube start --cpus=1 -p kw-stack --memory=2048 --extra-config=kubelet.cpu-cfs-quota=false -v 5
     echo -e "\n👉 Enabling NGINX Ingress controller..."
     minikube addons enable ingress -p kw-stack -v 5
     echo -e "\n👉 Deleting ValidatingWebhookConfiguration to bypass NGINX Ingress admission rules..."
