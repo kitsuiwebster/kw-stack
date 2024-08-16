@@ -192,6 +192,16 @@ case $COMMAND in
     sudo install minikube-linux-amd64 /usr/local/bin/minikube
     rm minikube-linux-amd64
 
+    echo "👉  Install Docker"
+    sudo apt install docker.io
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker $USER
+    newgrp docker
+
+    sudo apt install virtualbox virtualbox-ext-pack
+    sudo usermod -aG vboxusers $USER
+
     echo "👉  Install Kubectl"
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
