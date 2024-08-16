@@ -62,7 +62,7 @@ case $COMMAND in
     echo -e "\n👉 Setting vm.max_map_count to 262144..."
     sudo sysctl -w vm.max_map_count=262144
     echo -e "\n👉 Starting Minikube..."
-    minikube start --cpus=4 -p kw-stack -v 5
+    minikube start --cpus=1 -p kw-stack -v 5
     echo -e "\n👉 Enabling NGINX Ingress controller..."
     minikube addons enable ingress -p kw-stack -v 5
     echo -e "\n👉 Deleting ValidatingWebhookConfiguration to bypass NGINX Ingress admission rules..."
@@ -191,16 +191,15 @@ case $COMMAND in
     curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     sudo install minikube-linux-amd64 /usr/local/bin/minikube
     rm minikube-linux-amd64
+    sudo apt install virtualbox virtualbox-ext-pack -y
+    sudo usermod -aG vboxusers $USER
 
     echo "👉  Install Docker"
-    sudo apt install docker.io
+    sudo apt install docker.io -y
     sudo systemctl start docker
     sudo systemctl enable docker
     sudo usermod -aG docker $USER
     newgrp docker
-
-    sudo apt install virtualbox virtualbox-ext-pack
-    sudo usermod -aG vboxusers $USER
 
     echo "👉  Install Kubectl"
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
