@@ -9,7 +9,8 @@ update_hosts() {
   MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
 
   echo -e "\n👉 Define the hostnames"
-  HOSTNAMES=("couchdb.local" "keycloak.local" "nestjs.local" "reactjs.local" "apim-api.local" "apim-ui.local" "apim-portal.local" "apim-gateway.local" "apim-apiportal.local")
+  HOSTNAMES=("couchdb.local" "keycloak.local" "nestjs.local" "reactjs.local" "apim-api.local" "apim-ui.local"
+  "apim-portal.local" "apim-gateway.local" "apim-apiportal.local" "backend.pikapi.co" "pikapi.co" "keycloak.pikapi.co")
 
   echo -e "\n👉 Backup the original /etc/hosts file"
   sudo cp /etc/hosts /etc/hosts.bak
