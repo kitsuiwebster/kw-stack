@@ -132,7 +132,6 @@ case $COMMAND in
     wget -q -O - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak-ingress.yaml | \
     sed "s/KEYCLOAK_HOST/keycloak.pikapi.co/;s/annotations:/annotations:\n    cert-manager.io\/cluster-issuer: letsencrypt-prod/" | \
     kubectl apply -f -
-    kubectl describe certificate -n namespace_keycloak
 
     gravitee_ascii
 
