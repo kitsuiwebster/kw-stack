@@ -85,11 +85,25 @@ case $COMMAND in
 
     echo -e "\n👉 Enable MetalLB"
     minikube addons enable metallb -p kw-stack
+
     echo -e "\n👉 Configuring MetalLB..."
     IP_START="192.168.99.10"
     IP_END="192.168.99.100"
-    kubectl apply -f metallb/configmap.yaml
-    minikube addons configure metallb -p kw-stack --config='{"addresses":["'$IP_START'-'$IP_END'"]}'
+
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: metallb-system
+      name: config
+    data:
+      config: |
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - ${IP_START}-${IP_END}
+    EOF
 
     # couchdb_ascii
 
