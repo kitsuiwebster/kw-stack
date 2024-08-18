@@ -88,7 +88,7 @@ case $COMMAND in
     echo -e "\n👉 Configuring MetalLB..."
     IP_START="192.168.99.10"
     IP_END="192.168.99.100"
-    kubectl apply -f metallb/metallb-configmap.yaml
+    kubectl apply -f metallb/configmap.yaml
     minikube addons configure metallb -p kw-stack --config='{"addresses":["'$IP_START'-'$IP_END'"]}'
 
     # couchdb_ascii
