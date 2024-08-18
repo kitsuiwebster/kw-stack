@@ -9,8 +9,7 @@ update_hosts() {
   MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
 
   echo -e "\n👉 Define the hostnames"
-  HOSTNAMES=("couchdb.local" "keycloak.local" "nestjs.local" "reactjs.local" "apim-api.local" "apim-ui.local"
-  "apim-portal.local" "apim-gateway.local" "apim-apiportal.local" "backend.pikapi.co" "pikapi.co" "keycloak.pikapi.co" "nestjs.pikapi.co")
+  HOSTNAMES=("couchdb.pikapi.co" "pikapi.co" "keycloak.pikapi.co" "nest.pikapi.co")
 
   echo -e "\n👉 Backup the original /etc/hosts file"
   sudo cp /etc/hosts /etc/hosts.bak
@@ -40,22 +39,22 @@ wait_for_ingress() {
 print_urls_and_credentials() {
   MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
   echo -e "\n👉 Access your services at the following URLs:"
-  echo -e "\n\n🛋   CouchDB: http://couchdb.local/_utils"
+  echo -e "\n\n🛋   CouchDB: http://couchdb.pikapi.co/_utils"
   echo -e "\n🆔  admin"
   echo -e "🗝️   admin"
   echo -e "\n\n🪐  Gravitee:"
-  echo -e "\n🪐  Management API: http://apim-api.local/management"
-  echo -e "\n🪐  Management UI: http://apim-ui.local/console"
+  echo -e "\n🪐  Management API: http://apim-api.pikapi.co/management"
+  echo -e "\n🪐  Management UI: http://apim-ui.pikapi.co/console"
   echo -e "\n🆔  admin"
   echo -e "🗝️   admin"
-  echo -e "\n🪐  Portal: http://apim-portal.local"
-  echo -e "\n🪐  Gateway: http://apim-gateway.local"
-  echo -e "\n🪐  API Portal: http://apim-apiportal.local/portal"
-  echo -e "\n\n🔐  Keycloak: http://keycloak.local"
+  echo -e "\n🪐  Portal: http://apim-portal.pikapi.co"
+  echo -e "\n🪐  Gateway: http://apim-gateway.pikapi.co"
+  echo -e "\n🪐  API Portal: http://apim-apiportal.pikapi.co/portal"
+  echo -e "\n\n🔐  Keycloak: http://keycloak.pikapi.co"
   echo -e "\n🆔  admin"
   echo -e "🗝️   admin"
-  echo -e "\n\n⚙️   NestJS: http://nestjs.local"
-  echo -e "\n\n⚛️   ReactJS: http://reactjs.local"
+  echo -e "\n\n⚙️   NestJS: http://nest.pikapi.co"
+  echo -e "\n\n⚛️   ReactJS: http://pikapi.co"
 }
 
 case $COMMAND in
@@ -77,74 +76,45 @@ case $COMMAND in
 
     echo -e "\n☸️ Adding Bitnami Helm repository..."
     helm repo update
-    
-    echo -e "\n👉 Install cert-manager"
-    kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
-    echo -e "\n👉 Waiting for cert-manager to be ready..."
-    kubectl apply -f cert-manager/cluster-issuer.yaml
 
-    echo -e "\n👉 Enable MetalLB"
-    minikube addons enable metallb -p kw-stack
+    echo -e "\n🔑 Installing cert-manager..."
+    kubectl create namespace cert-manager/config-map
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+    helm install cert-manager jetstack/cert-manager \
+      --namespace cert-manager \
+      --version v1.6.0 \
+      --set installCRDs=true
+    echo -e "\n🔑 Applying cluster issuer"
+    kubectl apply -f letsencrypt/cluster-issuer.yaml
+    kubectl describe certificate -n default
 
-    echo -e "\n👉 Configuring MetalLB..."
-    IP_START="192.168.99.10"
-    IP_END="192.168.99.100"
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - ${IP_START}-${IP_END}
-EOF
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - ${IP_START}-${IP_END}
-EOF
-    
+    couchdb_ascii
 
-    # couchdb_ascii
+    echo -e "\n🛋   Applying CouchDB manifests..."
+    kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
+    kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
+    kubectl apply -f manifests/couchdb/couchdb-service.yaml
 
-    # echo -e "\n🛋   Applying CouchDB manifests..."
-    # kubectl apply -f manifests/couchdb/couchdb-deployment.yaml
-    # kubectl apply -f manifests/couchdb/couchdb-ingress.yaml
-    # kubectl apply -f manifests/couchdb/couchdb-service.yaml
+    echo -e "\n🛋   Applying Kubernetes job to initialize CouchDB..."
+    kubectl apply -f jobs/couchdb-init.yaml
 
-    # echo -e "\n🛋   Applying Kubernetes job to initialize CouchDB..."
-    # kubectl apply -f jobs/couchdb-init.yaml
+    echo -e "\n🔑 Creating CouchDB secret..."
+    kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
 
-    # echo -e "\n🔑 Creating CouchDB secret..."
-    # kubectl create secret generic couchdb-secret --from-literal=username=admin --from-literal=password=admin
+    react_ascii
 
-    # react_ascii
+    echo -e "\n⚛️   Building React app..."
+    (cd reactjs-app && npm install && npm run build)
 
-    # echo -e "\n⚛️   Building React app..."
-    # (cd reactjs-app && npm install && npm run build)
+    echo -e "\n⚛️   Building React Docker image..."
+    eval $(minikube docker-env -p kw-stack)
+    docker build -t reactjs-app:latest ./reactjs-app
 
-    # echo -e "\n⚛️   Building React Docker image..."
-    # eval $(minikube docker-env -p kw-stack)
-    # docker build -t reactjs-app:latest ./reactjs-app
-
-    # echo -e "\n⚛️   Applying React manifests..."
-    # kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
-    # kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
-    # kubectl apply -f manifests/reactjs/reactjs-service.yaml
+    echo -e "\n⚛️   Applying React manifests..."
+    kubectl apply -f manifests/reactjs/reactjs-deployment.yaml
+    kubectl apply -f manifests/reactjs/reactjs-ingress.yaml
+    kubectl apply -f manifests/reactjs/reactjs-service.yaml
 
     nest_ascii
 
@@ -166,16 +136,8 @@ EOF
     kubectl create -f https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak.yaml
     echo -e "\n🔐  Setting up Keycloak Ingress..."
     wget -q -O - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak-ingress.yaml | \
-    sed "s/KEYCLOAK_HOST/keycloak.pikapi.co/;s/annotations:/annotations:\n    cert-manager.io\/cluster-issuer: letsencrypt-prod/" | \
+    sed "s/KEYCLOAK_HOST/keycloak.pikapi.co" | \
     kubectl apply -f -
-
-    while [ -z "$(kubectl get svc keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
-        echo "Waiting for external IP..."
-        sleep 10
-    done
-
-    EXTERNAL_IP=$(kubectl get svc keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    echo "Keycloak is available at: https://${EXTERNAL_IP}:8080"
 
     gravitee_ascii
 
@@ -190,18 +152,9 @@ EOF
       -f /home/ash/kitsui/kw-stack/manifests/gravitee/values.yaml \
       --set ingress.className=nginx \
       # --debug \
-      # --set ingress.controller.ingressClassName=nginx \
-      # --set apim.ingress.annotations."nginx\.ingress\.kubernetes\.io/configuration-snippet"=null
 
     echo -e "\n🪐 List of Gravitee Helm releases:"
     helm list -n gravitee-apim
-
-    # echo -e "\n🪐 Updating /etc/hosts for Gravitee services..."
-    # MINIKUBE_IP=$(minikube ip -p kw-stack -v 5)
-    # echo -e "\n$MINIKUBE_IP management-api.local" | sudo tee -a /etc/hosts
-    # echo -e "\n$MINIKUBE_IP gateway.local" | sudo tee -a /etc/hosts
-    # echo -e "\n$MINIKUBE_IP portal.local" | sudo tee -a /etc/hosts
-    # echo -e "\n$MINIKUBE_IP management-ui.local" | sudo tee -a /etc/hosts
 
     echo -e "\n🔑 Creating Gravitee secret..."
     kubectl create secret generic gravitee-secret --from-literal=username=admin --from-literal=password=admin
