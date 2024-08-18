@@ -136,7 +136,6 @@ case $COMMAND in
     kubectl create -f https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak.yaml
     echo -e "\n🔐  Setting up Keycloak Ingress..."
     wget -q -O - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak-ingress.yaml | \
-    sed "s/KEYCLOAK_HOST/keycloak.pikapi.co" | \
     kubectl apply -f -
 
     gravitee_ascii
