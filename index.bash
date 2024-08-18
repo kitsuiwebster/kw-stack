@@ -10,7 +10,7 @@ update_hosts() {
 
   echo -e "\n👉 Define the hostnames"
   HOSTNAMES=("couchdb.local" "keycloak.local" "nestjs.local" "reactjs.local" "apim-api.local" "apim-ui.local"
-  "apim-portal.local" "apim-gateway.local" "apim-apiportal.local" "backend.pikapi.co" "pikapi.co" "keycloak.pikapi.co")
+  "apim-portal.local" "apim-gateway.local" "apim-apiportal.local" "backend.pikapi.co" "pikapi.co" "keycloak.pikapi.co" "nestjs.pikapi.co")
 
   echo -e "\n👉 Backup the original /etc/hosts file"
   sudo cp /etc/hosts /etc/hosts.bak
@@ -77,6 +77,11 @@ case $COMMAND in
 
     echo -e "\n☸️ Adding Bitnami Helm repository..."
     helm repo update
+    
+    echo -e "\n👉 Install cert-manager"
+    kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+    echo -e "\n👉 Waiting for cert-manager to be ready..."
+    kubectl apply -f cert-manager/cluster-issuer.yaml
 
     # couchdb_ascii
 
@@ -125,8 +130,9 @@ case $COMMAND in
     kubectl create -f https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak.yaml
     echo -e "\n🔐  Setting up Keycloak Ingress..."
     wget -q -O - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak-ingress.yaml | \
-    sed "s/KEYCLOAK_HOST/keycloak.pikapi.co/" | \
-    kubectl create -f -
+    sed "s/KEYCLOAK_HOST/keycloak.pikapi.co/;s/annotations:/annotations:\n    cert-manager.io\/cluster-issuer: letsencrypt-prod/" | \
+    kubectl apply -f -
+    kubectl describe certificate -n namespace_keycloak
 
     gravitee_ascii
 
