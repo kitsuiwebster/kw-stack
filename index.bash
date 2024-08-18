@@ -83,6 +83,14 @@ case $COMMAND in
     echo -e "\n👉 Waiting for cert-manager to be ready..."
     kubectl apply -f cert-manager/cluster-issuer.yaml
 
+    echo -e "\n👉 Enable MetalLB"
+    minikube addons enable metallb -p kw-stack
+    echo -e "\n👉 Configuring MetalLB..."
+    IP_START="192.168.99.10"
+    IP_END="192.168.99.100"
+    kubectl apply -f metallb/metallb-configmap.yaml
+    minikube addons configure metallb -p kw-stack --config='{"addresses":["'$IP_START'-'$IP_END'"]}'
+
     # couchdb_ascii
 
     # echo -e "\n🛋   Applying CouchDB manifests..."
@@ -132,6 +140,14 @@ case $COMMAND in
     wget -q -O - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak-ingress.yaml | \
     sed "s/KEYCLOAK_HOST/keycloak.pikapi.co/;s/annotations:/annotations:\n    cert-manager.io\/cluster-issuer: letsencrypt-prod/" | \
     kubectl apply -f -
+
+    while [ -z "$(kubectl get svc keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
+        echo "Waiting for external IP..."
+        sleep 10
+    done
+
+    EXTERNAL_IP=$(kubectl get svc keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo "Keycloak is available at: https://${EXTERNAL_IP}:8080"
 
     gravitee_ascii
 
