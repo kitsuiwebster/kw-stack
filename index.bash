@@ -89,21 +89,35 @@ case $COMMAND in
     echo -e "\n👉 Configuring MetalLB..."
     IP_START="192.168.99.10"
     IP_END="192.168.99.100"
-
-    cat <<EOF | kubectl apply -f -
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      namespace: metallb-system
-      name: config
-    data:
-      config: |
-        address-pools:
-        - name: default
-          protocol: layer2
-          addresses:
-          - ${IP_START}-${IP_END}
-    EOF
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - ${IP_START}-${IP_END}
+EOF
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - ${IP_START}-${IP_END}
+EOF
+    
 
     # couchdb_ascii
 
